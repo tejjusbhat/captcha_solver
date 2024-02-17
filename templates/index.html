@@ -7,31 +7,47 @@
 </head>
 <body>
   <h1> Solve Captchas </h1>
+  
   <form id="imageForm" action="/" method="post" enctype="multipart/form-data">
-    <input type="file" name="captcha" id="captcha">
-    <button type="submit"> Submit </button>
+    <input type="file" name="captcha" id="captcha" accept="image/*" onchange="previewImage(event)">
+    <input type="submit" value="Submit">
   </form>
 
+  <img id="preview" style="display: none;" alt="Preview Image">
+  
   <script>
+    function previewImage(event) {
+      const input = event.target;
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById('preview');
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
     const form = document.getElementById('imageForm');
     form.addEventListener('submit', async (e) => {
 
-      e.preventDefault();
+        e.preventDefault();
 
-      const formData = new FormData(form);
+        const formData = new FormData(form);
 
-      const response = await fetch('/', {
-        method: 'POST',
-        body: formData
-      });
+        const response = await fetch('/', {
+            method: 'POST',
+            body: formData
+        });
 
-      const data = await response.blob();
-      
-      const url = URL.createObjectURL(data);
-      const img = document.createElement('img');
-      img.src = url;
-      document.body.appendChild(img);
-    }); 
+        const data = await response.blob();
+
+        const url = URL.createObjectURL(data);
+        const img = document.createElement('img');
+        img.src = url;
+        document.body.appendChild(img);
+    });
   </script>
 </body>
 </html>
