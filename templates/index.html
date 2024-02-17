@@ -7,5 +7,31 @@
 </head>
 <body>
   <h1> Solve Captchas </h1>
+  <form id="imageForm" action="/" method="post" enctype="multipart/form-data">
+    <input type="file" name="captcha" id="captcha">
+    <button type="submit"> Submit </button>
+  </form>
+
+  <script>
+    const form = document.getElementById('imageForm');
+    form.addEventListener('submit', async (e) => {
+
+      e.preventDefault();
+
+      const formData = new FormData(form);
+
+      const response = await fetch('/', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.blob();
+      
+      const url = URL.createObjectURL(data);
+      const img = document.createElement('img');
+      img.src = url;
+      document.body.appendChild(img);
+    }); 
+  </script>
 </body>
 </html>
