@@ -12,7 +12,16 @@ def index():
 
         annotated = solve_captcha(img, "traffic light")
 
-        return send_file(annotated, mimetype='image') 
+        _, buffer = cv2.imencode('.png', annotated)
+
+        image_bytes = buffer.tobytes()
+
+        return send_file(
+            filename_or_fp=None,
+            mimetype='image/png',
+            attachment_filename='annotated_image.png',
+            data=image_bytes
+        )
     return render_template('index.html')
 
 
