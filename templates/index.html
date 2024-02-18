@@ -1,53 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Captcha Solver</title>
+  <link rel="stylesheet" href="static/main.css">
 </head>
+
 <body>
-  <h1> Solve Captchas </h1>
-  
-  <form id="imageForm" action="/" method="post" enctype="multipart/form-data">
-    <input type="file" name="captcha" id="captcha" accept="image/*" onchange="previewImage(event)">
-    <input type="submit" value="Submit">
-  </form>
+  <h1>Captcha Solver</h1>
+  <input type="file" id="image-input">
+  <br><br>
+  <label for="target-select">Select Target:</label>
+  <select id="target-select">
+    {% for value in target_options.values() %}
+    <option value="{{ value }}">{{ value }}</option>
+    {% endfor %}
+  </select>
+  <button onclick="processImage()">Solve Captcha</button>
+  <br>
+  <img id="annotated-image" src="" alt="Annotated Image">
 
-  <img id="preview" style="display: none;" alt="Preview Image">
-  
   <script>
-    function previewImage(event) {
-      const input = event.target;
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const preview = document.getElementById('preview');
-          preview.src = e.target.result;
-          preview.style.display = 'block';
-        }
-        reader.readAsDataURL(input.files[0]);
-      }
+    function processImage() {
+      const fileInput = document.getElementById('image-input');
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function (event) {
+        const image = event.target.result.split(',')[1];
+        const target = document.getElementById('target-select').value;
+        fetch('/process_image', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            image: image,
+            target: target
+          })
+        })
+          .then(response => response.json())
+          .then(data => {
+            const annotated_image = document.getElementById('annotated-image')
+            annotated_image.src = `data:image/jpeg;base64,${data.annotated_image}`;
+            annotated_image.style.display = 'block';
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      };
+
+      reader.readAsDataURL(file);
     }
-
-    const form = document.getElementById('imageForm');
-    form.addEventListener('submit', async (e) => {
-
-        e.preventDefault();
-
-        const formData = new FormData(form);
-
-        const response = await fetch('/', {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await response.blob();
-
-        const url = URL.createObjectURL(data);
-        const img = document.createElement('img');
-        img.src = url;
-        document.body.appendChild(img);
-    });
   </script>
 </body>
+
 </html>
