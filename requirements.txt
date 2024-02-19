@@ -1,4 +1,5 @@
 ultralytics
 Flask
+Flask-Cors
 numpy
 opencv-python
