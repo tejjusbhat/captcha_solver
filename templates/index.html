@@ -5,56 +5,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Captcha Solver</title>
-  <link rel="stylesheet" href="static/main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body>
-  <h1>Captcha Solver</h1>
-  <input type="file" id="image-input">
-  <br><br>
-  <label for="target-select">Select Target:</label>
-  <select id="target-select">
-    {% for value in target_options.values() %}
-    <option value="{{ value }}">{{ value }}</option>
-    {% endfor %}
-  </select>
+  <h1>SOLVE CAPTCHA</h1>
+  <div class="image-upload" id="image-upload" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)">
+    <label for="image-input">
+      <img id="preview" src="{{ url_for('static', filename='images/upload.svg') }}" alt="Upload" />
+      <p>Drag & Drop or Click to Upload</p>
+    </label>
+    <input type="file" accept="image/*" id="image-input" />
+  </div>
+  <div class="select-container">
+    <label for="target-select">Select Target:</label>
+    <select id="target-select">
+      {% for value in target_options.values() %}
+      <option value="{{ value }}">{{ value }}</option>
+      {% endfor %}
+    </select>
+  </div>
   <button onclick="processImage()">Solve Captcha</button>
-  <br>
-  <img id="annotated-image" src="" alt="Annotated Image">
 
-  <script>
-    function processImage() {
-      const fileInput = document.getElementById('image-input');
-      const file = fileInput.files[0];
-      const reader = new FileReader();
-
-      reader.onload = function (event) {
-        const image = event.target.result.split(',')[1];
-        const target = document.getElementById('target-select').value;
-        fetch('/process_image', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            image: image,
-            target: target
-          })
-        })
-          .then(response => response.json())
-          .then(data => {
-            const annotated_image = document.getElementById('annotated-image')
-            annotated_image.src = `data:image/jpeg;base64,${data.annotated_image}`;
-            annotated_image.style.display = 'block';
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
-      };
-
-      reader.readAsDataURL(file);
-    }
-  </script>
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 
 </html>
