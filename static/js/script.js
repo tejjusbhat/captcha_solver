@@ -36,7 +36,6 @@ function processImage() {
 
   reader.onload = function (event) {
     const image = event.target.result.split(",")[1];
-    const target = document.getElementById("target-select").value;
     fetch("/process_image", {
       method: "POST",
       headers: {
@@ -44,7 +43,6 @@ function processImage() {
       },
       body: JSON.stringify({
         image: image,
-        target: target,
       }),
     })
       .then((response) => response.json())

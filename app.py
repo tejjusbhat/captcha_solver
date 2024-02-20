@@ -4,15 +4,41 @@ import cv2
 from ultralytics import YOLO
 import numpy as np
 import base64
+from pytesseract import *
 
 app = Flask(__name__)
 CORS(app)
 
-model = YOLO('yolov8n.pt')
+model = YOLO('static/models/yolov8n.pt')
+def find_target(image):
+  image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+  image = image[0:image.shape[0]//4,0:image.shape[1]]
+  image = cv2.bitwise_not(image)
+  results = pytesseract.image_to_data(image, output_type=Output.DICT)
 
-def solve_captcha(image_data, target):
+  full_text = ""
+  for i in range(len(results["text"])-1):
+    x, y, w, h = results["left"][i], results["top"][i], results["width"][i], results["height"][i]
+    text = results["text"][i]
+    full_text += text + " "
+
+  target = ""
+  for option in model.names.values():
+    if option in full_text:
+      target = option
+      break
+
+  return target
+   
+
+def solve_captcha(image_data):
   nparr = np.frombuffer(base64.b64decode(image_data), np.uint8)
   image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+  target = find_target(image)
+
+  if target == "":
+    return image_data
 
   results = model(image)
 
@@ -39,8 +65,7 @@ def solve_captcha(image_data, target):
 def process_image():
     data = request.json
     image_data = data['image']
-    target = data['target']
-    annotated_image = solve_captcha(image_data, target)
+    annotated_image = solve_captcha(image_data)
     return jsonify({'annotated_image': annotated_image})
 
 @app.route('/')

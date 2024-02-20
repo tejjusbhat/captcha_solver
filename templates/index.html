@@ -20,14 +20,14 @@
     </label>
     <input type="file" accept="image/*" id="image-input" />
   </div>
-  <div class="select-container">
+  <!-- <div class="select-container">
     <label for="target-select">Select Target:</label>
     <select id="target-select">
       {% for value in target_options.values() %}
       <option value="{{ value }}">{{ value }}</option>
       {% endfor %}
     </select>
-  </div>
+  </div> -->
   <button onclick="processImage()">Solve Captcha</button>
 
   <script src="{{ url_for('static', filename='js/script.js') }}"></script>
