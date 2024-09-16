@@ -1,7 +1,7 @@
-ultralytics
-Flask
-Flask-Cors
-numpy
+fastapi
+uvicorn
+easyocr
 opencv-python
-pytesseract
-tessereact
+ultralytics
+numpy
+python-multipart
