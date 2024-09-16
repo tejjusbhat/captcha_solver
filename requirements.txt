@@ -1,7 +1,7 @@
 fastapi
 uvicorn
-easyocr
-opencv-python
+opencv-python-headless
 ultralytics
+easyocr
 numpy
 python-multipart

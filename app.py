@@ -95,6 +95,11 @@ async def process_image(file: UploadFile = File(...)):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+# Define a test route to check if the API is running successfully
+@app.get('/test')
+async def test():
+    return {"message": "API is running successfully!"}
+
 
 # Run the server using uvicorn if needed
 if __name__ == '__main__':
