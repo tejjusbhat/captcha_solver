@@ -1,10 +1,11 @@
-from fastapi import FastAPI, HTTPException, File, UploadFile
+from fastapi import FastAPI, HTTPException, File, UploadFile, Query
 from fastapi.responses import StreamingResponse
 import cv2
 from ultralytics import YOLO
 import numpy as np
 import easyocr
 import io
+import os
 
 # Create FastAPI app instance
 app = FastAPI()
@@ -15,7 +16,18 @@ model = YOLO('static/models/yolov8n.pt')
 # Initialize EasyOCR reader
 reader = easyocr.Reader(['en'])  # You can specify more languages if needed
 
+# Retrieve API key from environment variable
+API_KEY = os.getenv("API_KEY")
 
+if API_KEY is None:
+    raise ValueError("API_KEY environment variable is not set.")
+
+# Function to check API key via query parameter
+def check_api_key(api_key: str):
+    if api_key.strip() != API_KEY.strip():
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+
+# Define the captcha solving and object detection logic
 def find_target(image):
     # Convert image to grayscale
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -34,7 +46,6 @@ def find_target(image):
             break
 
     return target
-
 
 def solve_captcha(image):
     # Find the target object from the text
@@ -64,10 +75,12 @@ def solve_captcha(image):
 
     return image
 
-
-# Define the route to process the image directly uploaded by the user
+# Define the route to process the image directly uploaded by the user, with API key in query param
 @app.post('/process_image')
-async def process_image(file: UploadFile = File(...)):
+async def process_image(file: UploadFile = File(...), api_key: str = Query(...)):
+    # Check API key from query parameters
+    check_api_key(api_key)
+
     try:
         # Read the uploaded image file
         file_bytes = await file.read()
@@ -95,11 +108,13 @@ async def process_image(file: UploadFile = File(...)):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-# Define a test route to check if the API is running successfully
+# Define a test route to check if the API is running successfully, with API key in query param
 @app.get('/test')
-async def test():
-    return {"message": "API is running successfully!"}
+async def test(api_key: str = Query(...)):
+    # Check API key from query parameters
+    check_api_key(api_key)
 
+    return {"message": "API is running successfully!"}
 
 # Run the server using uvicorn if needed
 if __name__ == '__main__':
