@@ -7,6 +7,18 @@ import easyocr
 import io
 import os
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Add logging to the API key check function
+def check_api_key(api_key: str):
+    if api_key.strip() != API_KEY.strip():
+        logger.warning("Invalid API key provided")
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+
+
 # Create FastAPI app instance
 app = FastAPI()
 
@@ -119,4 +131,5 @@ async def test(api_key: str = Query(...)):
 # Run the server using uvicorn if needed
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, debug=True)
+    port = int(os.getenv('PORT', 8080))  # Use the PORT environment variable
+    uvicorn.run(app, host="0.0.0.0", port=port)
