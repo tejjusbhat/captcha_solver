@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, File, UploadFile, Query
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 import cv2
 from ultralytics import YOLO
 import numpy as np
@@ -22,6 +23,14 @@ def check_api_key(api_key: str):
 # Create FastAPI app instance
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Frontend origin during development
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (POST, GET, etc.)
+    allow_headers=["*"],  # Allow all headers, including authorization headers if needed
+)
+
 # Initialize the YOLO model
 model = YOLO('static/models/yolov8n.pt')
 
@@ -33,11 +42,6 @@ API_KEY = os.getenv("API_KEY")
 
 if API_KEY is None:
     raise ValueError("API_KEY environment variable is not set.")
-
-# Function to check API key via query parameter
-def check_api_key(api_key: str):
-    if api_key.strip() != API_KEY.strip():
-        raise HTTPException(status_code=401, detail="Invalid API Key")
 
 # Define the captcha solving and object detection logic
 def find_target(image):
