@@ -17,7 +17,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Use the PORT environment variable, default to 8080 if not set
+# Expose the port that Uvicorn will listen on
 EXPOSE 8080
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "${PORT:-8080}"]
+# Set a default value for PORT if not passed as an environment variable
+ENV PORT 8080
+
+# Use the default PORT environment variable or 8080 if not set
+CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT}"]

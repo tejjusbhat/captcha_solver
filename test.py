@@ -6,7 +6,7 @@ API_KEY = os.getenv("API_KEY")
 
 def annotate_image(file_path):
     # Define the URL with the API key as a query parameter
-    url = f'http://127.0.0.1:8000/process_image?api_key={API_KEY}'
+    url = f'http://127.0.0.1:8080/process_image?api_key={API_KEY}'
 
     # Extract the original file name without extension
     base_name = os.path.basename(file_path)
