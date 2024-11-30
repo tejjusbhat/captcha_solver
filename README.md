@@ -14,7 +14,7 @@ This is a Python web application designed to solve grid captchas commonly found 
 - Work in progress: ongoing improvements and enhancements.
 
 ## Visit the website
-http://tejjusbhat.pythonanywhere.com/
+http://www.tejjusbhat.com/solve-captcha
 
 ## Installation
 1. Clone the repository to your local machine:
