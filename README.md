@@ -29,7 +29,6 @@ https://www.tejjusbhat.com/solve-captcha
     ```
     pip install -r requirements.txt
     ```
-NOTE: This project requires you to download tesseract and add it to PATH
 
 ## Usage
 1. Start the web application by running:
